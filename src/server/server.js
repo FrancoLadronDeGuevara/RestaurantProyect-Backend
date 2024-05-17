@@ -27,8 +27,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const userRoutes = require("../routes/user.routes");
+const productRoutes = require("../routes/product.routes");
 
 app.use("/api/users", userRoutes);
+app.use("/api/products", productRoutes);
 
 
 
