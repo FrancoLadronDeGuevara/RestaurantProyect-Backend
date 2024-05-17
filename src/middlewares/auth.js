@@ -18,9 +18,11 @@ const isAuthenticated = async(req,res,next) => {
 
 const isAdmin = (...roles) => {
     return (req,res,next) => {
+
         if(!roles.includes(req.user.role)){
             return res.status(501).json({message:"No tienes permiso para acceder"});
         };
+        
         next();
     }
 }

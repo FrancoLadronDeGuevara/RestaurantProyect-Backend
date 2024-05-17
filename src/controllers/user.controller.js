@@ -5,7 +5,9 @@ const sendToken = require('../helpers/jwtToken');
 const createUser = async (req, res) => {
     try {
         const user = req.body;
+
         const userWithPassHash = await hashingPassword(user);
+
         const userCreated = await createUserService(userWithPassHash);
         res.status(201).json({message:"Usuario creado con exito", user: userCreated});
     } catch (error) {
@@ -25,8 +27,6 @@ const loginUser = async (req, res, next) => {
     if (!passMatch) return res.status(400).json({message:"La contraseña ingresada no es valida"});
 
     sendToken(user, 201, res);
-
-    // res.status(200).json({message:"Bienvenido", user});
   } catch (error) {
     return res.status(400).json({message:"Error al loguearse", error});
   }

@@ -13,4 +13,5 @@ const getByEmailService = async (email) => {
 const getUserService = async(id) => {
     return User.findById(id);
 }
+
 module.exports = { createUserService, getUserService, getByEmailService }
