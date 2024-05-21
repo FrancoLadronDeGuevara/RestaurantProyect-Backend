@@ -2,9 +2,30 @@ const {hashingPassword, passwordChecking} = require('../helpers/passwordHashing'
 const { getUserService, createUserService, getByEmailService } = require('../services/user.services');
 const sendToken = require('../helpers/jwtToken');
 
+const strongPasswordRegex =
+  /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
+const strongEmailRegex =
+  /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
+const firstnameRegex = /^[a-zA-Z]{3,15}$/;
+const lastnameRegex = /^[a-zA-Z ]{2,30}$/;
+
 const createUser = async (req, res) => {
     try {
         const user = req.body;
+
+        const userExist = await getByEmailService(user.email);
+        
+        if (userExist) return res.status(400).json({message:"El email ya se encuentra registrado"});
+
+        if (!user.password || !user.email || !user.firstname || !user.lastname) return res.status(400).json({message:"Todos los campos son obligatorios"});
+
+        if (!strongPasswordRegex.test(user.password)) return res.status(400).json({message:"La contraseña debe tener al menos 8 carácteres y contener al menos una letra mayúscula, una letra minúscula y un número"});
+
+        if (!strongEmailRegex.test(user.email)) return res.status(400).json({message:"El correo ingresado no es valido"});
+
+        if (!firstnameRegex.test(user.firstname)) return res.status(400).json({message:"El nombre debe ser de 3 a 15 caracteres"});
+
+        if (!lastnameRegex.test(user.lastname)) return res.status(400).json({message:"El apellido debe ser de 2 a 30 caracteres"});
 
         const userWithPassHash = await hashingPassword(user);
 
