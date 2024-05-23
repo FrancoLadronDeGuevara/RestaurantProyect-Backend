@@ -36,14 +36,14 @@ const createUser = async (req, res) => {
     }
 }
 
-const loginUser = async (req, res, next) => {
+const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const user = await getByEmailService(email);
+    const payload = req.body;
+    const user = await getByEmailService(payload.email);
 
     if (!user) return res.status(400).json({message:"El usuario no esta registrado"});
 
-    const passMatch = await passwordChecking(password, user.password);
+    const passMatch = await passwordChecking(payload.password, user.password);
 
     if (!passMatch) return res.status(400).json({message:"La contraseña ingresada no es valida"});
 
@@ -53,7 +53,7 @@ const loginUser = async (req, res, next) => {
   }
 };
 
-const logoutUser = async (req, res, next) => {
+const logoutUser = async (req, res) => {
   try {
     res.cookie('token', null, {
       expires: new Date(Date.now()),

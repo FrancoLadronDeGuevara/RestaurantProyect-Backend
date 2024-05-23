@@ -6,7 +6,7 @@ const isAuthenticated = async(req,res,next) => {
     const {token} = req.cookies;
 
     if(!token){
-        return res.status(501).json({message:"Por favor, inicio sesión primero"});
+        return
     }
 
     const decoded = jwt.verify(token, jwtConfig.secret);
