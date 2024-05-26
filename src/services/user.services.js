@@ -14,4 +14,20 @@ const getUserService = async(id) => {
     return User.findById(id);
 }
 
-module.exports = { createUserService, getUserService, getByEmailService }
+const getAllUsersService = async() => {
+    return User.find({});
+}
+
+const deleteUserService = async(id) => {
+    return User.findByIdAndDelete(id);
+}
+
+const editUserService = async(id, user) => {
+    return User.findByIdAndUpdate(id, user, { new: true });
+}
+
+const getUserCartService = async(id) => {
+    return User.findById(id).populate("cart");
+}
+
+module.exports = { createUserService, getUserService, getByEmailService, getAllUsersService, deleteUserService, editUserService, getUserCartService }

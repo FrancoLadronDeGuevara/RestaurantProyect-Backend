@@ -19,14 +19,20 @@ const userSchema = new Schema({
     type: String,
     required: [true, "La contraseña es obligatoria"],
   },
+  cart: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Product",
+    },
+  ],
   role: {
     type: String,
     enum: ["admin", "user"],
     default: "user",
   },
-  verified: {
+  active: {
     type: Boolean,
-    default: false,
+    default: true,
   },
 });
 
