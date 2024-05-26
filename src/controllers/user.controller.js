@@ -171,9 +171,9 @@ const deleteUser = async (req, res) => {
 
 const getUserCart = async (req, res) => {
   try {
-    const userWithPopulateCart = await getUserCartService(req.user.id);
-    if(userWithPopulateCart.cart.length == 0) return res.status(400).json({ message: "No hay productos en el carrito" });
-    res.status(200).json(userWithPopulateCart.cart);
+    const userCart = await getUserCartService(req.user.id);
+    if(userCart.length == 0) return res.status(400).json({ message: "No hay productos en el carrito" });
+    res.status(200).json(userCart);
   } catch (error) {
     res.status(500).json({ message: "Error al obtener el carrito", error });
   }

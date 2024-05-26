@@ -27,7 +27,8 @@ const editUserService = async(id, user) => {
 }
 
 const getUserCartService = async(id) => {
-    return User.findById(id).populate("cart");
+    const userWithPopulateCart = await User.findById(id).populate("cart");
+    return userWithPopulateCart.cart;
 }
 
 module.exports = { createUserService, getUserService, getByEmailService, getAllUsersService, deleteUserService, editUserService, getUserCartService }
