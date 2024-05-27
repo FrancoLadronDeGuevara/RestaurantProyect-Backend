@@ -28,7 +28,7 @@ const createProduct = async (req, res) => {
     const productFound = await getProductByNameService(product.name);
 
     if (productFound)
-      return res.status(400).json({ message: "El producto ya existe" });
+      return res.status(400).json({ message: "Ya existe un producto con ese nombre" });
 
     if (!regexProductName.test(product.name))
       return res.status(400).json({
