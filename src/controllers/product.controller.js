@@ -43,7 +43,7 @@ const createProduct = async (req, res) => {
     const productCreated = await createProductService(product);
     res
       .status(201)
-      .json({ message: "Producto creado con éxito", product: productCreated });
+      .json(productCreated);
   } catch (error) {
     res.status(500).json({ message: "Error al crear el producto", error });
   }
@@ -129,9 +129,13 @@ const deleteProduct = async (req, res) => {
       return res.status(404).json({ message: "Producto no encontrado" });
     }
 
-    await deleteProductService(id);
+    const productDeleted = await deleteProductService(id);
 
-    res.status(200).json({ message: "Producto eliminado con éxito" });
+    if (!productDeleted) {
+      return res.status(500).json({ message: "Error al eliminar el producto" });
+    }
+
+    res.status(200).json(productDeleted);
   } catch (error) {
     res.status(500).json({ message: "Error al eliminar el producto", error });
   }
