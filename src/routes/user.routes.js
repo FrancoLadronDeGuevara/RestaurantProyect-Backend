@@ -9,6 +9,7 @@ const {
   deleteUser,
   getUserCart,
   manageCartProduct,
+  updateProductInCart,
 } = require("../controllers/user.controller");
 const { isAuthenticated, isAdmin } = require("../middlewares/auth");
 const route = Router();
@@ -30,5 +31,7 @@ route.delete("/delete/:id", isAuthenticated, isAdmin("admin"), deleteUser);
 route.get("/user-cart", isAuthenticated, getUserCart);
 
 route.post("/manage-cart-product", isAuthenticated, manageCartProduct);
+
+route.put("/update-product-in-cart", isAuthenticated, updateProductInCart);
 
 module.exports = route;

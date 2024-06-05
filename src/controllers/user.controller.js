@@ -11,6 +11,7 @@ const {
   deleteUserService,
   getUserCartService,
   manageCartProductService,
+  updateProductInCartService,
 } = require("../services/user.services");
 const sendToken = require("../helpers/jwtToken");
 const { getProductByIdService } = require("../services/product.service");
@@ -86,11 +87,9 @@ const loginUser = async (req, res) => {
         .json({ message: "La contraseña ingresada no es valida" });
 
     if (!user.active)
-      return res
-        .status(400)
-        .json({
-          message: "El usuario ha sido deshabilitado por un administrador",
-        });
+      return res.status(400).json({
+        message: "El usuario ha sido deshabilitado por un administrador",
+      });
 
     sendToken(user, 201, res);
   } catch (error) {
@@ -202,18 +201,50 @@ const manageCartProduct = async (req, res) => {
     if (!userFound)
       return res.status(400).json({ message: "El usuario no existe" });
 
-    const {id} = req.body;
-    
+    const { id } = req.body;
+
     const productFound = await getProductByIdService(id);
 
     if (!productFound)
       return res.status(400).json({ message: "No se encontro el producto" });
 
-    const userWithPopulateCart = await manageCartProductService(userFound, productFound);
+    const userWithPopulateCart = await manageCartProductService(
+      userFound,
+      productFound
+    );
 
     res.status(200).json(userWithPopulateCart.cart);
   } catch (error) {
     res.status(500).json({ message: "Error al agregar al carrito", error });
+  }
+};
+
+const updateProductInCart = async (req, res) => {
+  try {
+    const userFound = await getUserService(req.user.id);
+
+    if (!userFound)
+      return res.status(400).json({ message: "El usuario no existe" });
+
+    const { id, action } = req.body;
+
+    const productFound = await getProductByIdService(id);
+
+    if (!productFound)
+      return res.status(400).json({ message: "No se encontro el producto" });
+
+    const userWithPopulateCart = await updateProductInCartService(
+      userFound,
+      productFound,
+      action
+    );
+
+    res.status(200).json(userWithPopulateCart.cart);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error al actualizar el producto en el carrito",
+      error,
+    });
   }
 };
 
@@ -227,4 +258,5 @@ module.exports = {
   deleteUser,
   getUserCart,
   manageCartProduct,
+  updateProductInCart,
 };

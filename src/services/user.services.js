@@ -49,6 +49,42 @@ const manageCartProductService = async (user, product) => {
   return user.populate("cart.product");
 };
 
+const updateProductInCartService = async (user, product, action) => {
+  const maxQuantity = 20;
+
+  const existingProductIndex = user.cart.findIndex(
+    (cartProduct) =>
+      cartProduct.product._id.toString() === product._id.toString()
+  );
+
+  if (action === "decrement" && existingProductIndex === -1) {
+    throw new Error("El producto no está en el carrito");
+  }
+
+  if (existingProductIndex !== -1) {
+    if (action === "increment") {
+      if (user.cart[existingProductIndex].quantity >= maxQuantity) {
+        throw new Error(
+          "No puedes agregar más de 20 unidades de este producto"
+        );
+      }
+      user.cart[existingProductIndex].quantity++;
+    } else if (action === "decrement") {
+      if (user.cart[existingProductIndex].quantity <= 1) {
+        throw new Error("La cantidad mínima de este producto es 1");
+      }
+      user.cart[existingProductIndex].quantity--;
+    }
+  } else {
+    if (action === "increment") {
+      user.cart.push({ product: product._id, quantity: 1 });
+    }
+  }
+
+  await user.save();
+  return user.populate("cart.product");
+};
+
 module.exports = {
   createUserService,
   getUserService,
@@ -58,4 +94,5 @@ module.exports = {
   editUserService,
   getUserCartService,
   manageCartProductService,
+  updateProductInCartService,
 };
