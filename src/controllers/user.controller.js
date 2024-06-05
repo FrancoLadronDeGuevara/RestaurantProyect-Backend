@@ -10,8 +10,10 @@ const {
   editUserService,
   deleteUserService,
   getUserCartService,
+  manageCartProductService,
 } = require("../services/user.services");
 const sendToken = require("../helpers/jwtToken");
+const { getProductByIdService } = require("../services/product.service");
 
 const strongPasswordRegex =
   /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
@@ -82,8 +84,13 @@ const loginUser = async (req, res) => {
       return res
         .status(400)
         .json({ message: "La contraseña ingresada no es valida" });
-      
-    if(!user.active) return res.status(400).json({ message: "El usuario ha sido deshabilitado por un administrador" });
+
+    if (!user.active)
+      return res
+        .status(400)
+        .json({
+          message: "El usuario ha sido deshabilitado por un administrador",
+        });
 
     sendToken(user, 201, res);
   } catch (error) {
@@ -143,15 +150,16 @@ const editUser = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if(id == req.user.id) return res.status(400).json({ message: "No puedes editar tu propio usuario" });
+    if (id == req.user.id)
+      return res
+        .status(400)
+        .json({ message: "No puedes editar tu propio usuario" });
 
     const payload = req.body;
 
     const userEdited = await editUserService(id, payload);
     if (!userEdited) return res.status(404).json("Usuario no encontrado");
-    res
-      .status(200)
-      .json(userEdited);
+    res.status(200).json(userEdited);
   } catch (error) {
     res.status(500).json({ message: "Error al editar el usuario", error });
   }
@@ -161,7 +169,10 @@ const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if(id == req.user.id) return res.status(400).json({ message: "No puedes eliminar tu propio usuario" });
+    if (id == req.user.id)
+      return res
+        .status(400)
+        .json({ message: "No puedes eliminar tu propio usuario" });
 
     const userDeleted = await deleteUserService(id);
 
@@ -169,9 +180,7 @@ const deleteUser = async (req, res) => {
       return res.status(400).json({ message: "El usuario no existe" });
     }
 
-    res
-      .status(200)
-      .json(userDeleted);
+    res.status(200).json(userDeleted);
   } catch (error) {
     res.status(500).json({ message: "Error al eliminar el usuario", error });
   }
@@ -180,10 +189,31 @@ const deleteUser = async (req, res) => {
 const getUserCart = async (req, res) => {
   try {
     const userCart = await getUserCartService(req.user.id);
-    if(userCart.length == 0) return res.status(400).json({ message: "No hay productos en el carrito" });
     res.status(200).json(userCart);
   } catch (error) {
     res.status(500).json({ message: "Error al obtener el carrito", error });
+  }
+};
+
+const manageCartProduct = async (req, res) => {
+  try {
+    const userFound = await getUserService(req.user.id);
+
+    if (!userFound)
+      return res.status(400).json({ message: "El usuario no existe" });
+
+    const {id} = req.body;
+    
+    const productFound = await getProductByIdService(id);
+
+    if (!productFound)
+      return res.status(400).json({ message: "No se encontro el producto" });
+
+    const userWithPopulateCart = await manageCartProductService(userFound, productFound);
+
+    res.status(200).json(userWithPopulateCart.cart);
+  } catch (error) {
+    res.status(500).json({ message: "Error al agregar al carrito", error });
   }
 };
 
@@ -196,4 +226,5 @@ module.exports = {
   editUser,
   deleteUser,
   getUserCart,
+  manageCartProduct,
 };
