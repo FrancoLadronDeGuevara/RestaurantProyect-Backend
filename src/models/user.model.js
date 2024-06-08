@@ -25,6 +25,12 @@ const userSchema = new Schema({
       quantity: { type: Number, default: 1 },
     },
   ],
+  orders: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Order'
+    }
+  ],
   role: {
     type: String,
     enum: ["admin", "user"],
