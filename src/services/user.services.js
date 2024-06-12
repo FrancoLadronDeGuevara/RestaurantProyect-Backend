@@ -85,6 +85,12 @@ const updateProductInCartService = async (user, product, action) => {
   return user.populate("cart.product");
 };
 
+const clearUserCartService = async (user) => {
+  user.cart = [];
+  await user.save();
+  return user.cart;
+};
+
 module.exports = {
   createUserService,
   getUserService,
@@ -95,4 +101,5 @@ module.exports = {
   getUserCartService,
   manageCartProductService,
   updateProductInCartService,
+  clearUserCartService
 };

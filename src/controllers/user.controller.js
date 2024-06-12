@@ -12,6 +12,7 @@ const {
   getUserCartService,
   manageCartProductService,
   updateProductInCartService,
+  clearUserCartService,
 } = require("../services/user.services");
 const sendToken = require("../helpers/jwtToken");
 const { getProductByIdService } = require("../services/product.service");
@@ -248,6 +249,21 @@ const updateProductInCart = async (req, res) => {
   }
 };
 
+const clearUserCart = async (req, res) => {
+  try {
+    const userFound = await getUserService(req.user.id);
+
+    if (!userFound)
+      return res.status(400).json({ message: "El usuario no existe" });
+
+    const emptyCart = await clearUserCartService(userFound);
+    
+    res.status(200).json(emptyCart);
+  } catch (error) {
+    res.status(500).json({ message: "Error al vaciar el carrito", error });
+  }
+}
+
 module.exports = {
   createUser,
   getUser,
@@ -259,4 +275,5 @@ module.exports = {
   getUserCart,
   manageCartProduct,
   updateProductInCart,
+  clearUserCart
 };

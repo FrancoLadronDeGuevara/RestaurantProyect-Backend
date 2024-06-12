@@ -10,13 +10,17 @@ const createOrderService = async (user, products, total, userAddress) => {
   };
   const newOrder = new Order(order);
   await newOrder.save();
-
-  user.cart = [];
+  
   user.orders.push(newOrder._id);
 
   await user.save();
 
-  return newOrder;
+  const populatedOrder = await newOrder.populate({
+    path: 'products.product',
+    model: 'Product'
+  });
+
+  return populatedOrder;
 };
 
 const getAllOrdersService = async () => {
