@@ -8,7 +8,7 @@ require("../dbConnection/dbConnection");
 const app = express();
 const port = serverConfig.port || 4000;
 
-const whitelist = ['http://localhost:5173'];
+const whitelist = ['http://localhost:5173', 'https://restaurant-proyect-ten.vercel.app'];
 
 app.use(cors({
     origin: function (origin, callback) {
